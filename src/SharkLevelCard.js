@@ -16,20 +16,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SharkCard = ({ shark, level }) => {
+export const SharkLevelCard = ({ level }) => {
   const classes = useStyles();
 
   return (
     <Card className={classes.root}>
       <CardContent>
         <Typography variant='h5' component='h2'>
-          {shark.name}
-        </Typography>
-        <Typography className={classes.pos} color='textSecondary'>
           {level.name}
         </Typography>
         <Typography variant='body2' component='p'>
-          {shark.description}
+          {level.description}
         </Typography>
       </CardContent>
     </Card>

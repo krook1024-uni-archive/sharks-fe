@@ -1,13 +1,13 @@
+import { useState, useEffect } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import MenuIcon from "@material-ui/icons/Menu";
 import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
-
-import { SharkCard } from "./SharkCard";
+import { Switch, Route, Link } from "react-router-dom";
+import { Sharks } from "./Sharks";
+import { SharkLevels } from "./SharkLevels";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,85 +17,70 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     marginBottom: theme.spacing(3),
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
+  menuTitle: {
+    flexGrow: 1,
   },
 }));
 
 const App = () => {
   const classes = useStyles();
-  const sharks = [
-    {
-      id: 1,
-      name: "Valaki",
-      description: "lorem Ipsum dolor sit amet ...",
-      sharkLevelId: 1,
-    },
-    {
-      id: 2,
-      name: "Valaki2",
-      description: "asd as lorem Ipsum dolor sit amet ...",
-      sharkLevelId: 1,
-    },
-    {
-      id: 3,
-      name: "Valaki3 Capa",
-      description: "dolor sit amet ...",
-      sharkLevelId: 1,
-    },
-    {
-      id: 4,
-      name: "Valaki4",
-      description: "lorem Ipsum dolor sit amet ...",
-      sharkLevelId: 1,
-    },
-  ];
 
-  const levels = [
-    {
-      id: 1,
-      name: "veszelyes capak`",
-      description: "lorem Ipsum dolor sit amet ...",
-    },
-  ];
+  const API_URL = process.env.REACT_APP_API_URL;
+  const [levels, setLevels] = useState([]);
+  const [loadingLevels, setLoadingLevels] = useState(true);
 
-  const findLevelForShark = (levels, id) => {
-    const filtered = levels.filter((obj) => {
-      return obj.id === id;
+  const [title, setTitle] = useState("Sharks");
+
+  useEffect(() => {
+    fetch(API_URL + "/sharklevel").then((resp) => {
+      if (resp.status !== 200) {
+        console.log(`Error occured, status code: ${resp.status}`);
+        return;
+      }
+
+      resp
+        .json()
+        .then((data) => {
+          setLevels(data);
+          setLoadingLevels(false);
+        })
+        .catch((err) => console.error("Couldn't convert JSON:", err));
     });
-
-    if (filtered[0]) return filtered[0];
-
-    return {};
-  };
+  }, [setLevels, setLoadingLevels, API_URL]);
 
   return (
     <div>
       <AppBar position='static' className={classes.menu}>
         <Toolbar>
-          <IconButton
-            edge='start'
-            color='inherit'
-            aria-label='menu'
-            className={classes.menuButton}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant='h6'>Sharks</Typography>
+          <Typography variant='h6' className={classes.menuTitle}>
+            {title}
+          </Typography>
+          <Button color='inherit' component={Link} to='/'>
+            Sharks
+          </Button>
+          <Button color='inherit' component={Link} to='/levels'>
+            Shark levels
+          </Button>
         </Toolbar>
       </AppBar>
 
       <Container maxWidth='lg'>
-        <Grid container spacing={2} className={classes.root}>
-          {sharks.map((shark) => (
-            <Grid item xs={12} md={4} key={shark.id}>
-              <SharkCard
-                shark={shark}
-                level={findLevelForShark(levels, shark.sharkLevelId)}
-              />
-            </Grid>
-          ))}
-        </Grid>
+        <Switch>
+          <Route exact path='/'>
+            <Sharks
+              levels={levels}
+              loadingLevels={loadingLevels}
+              setTitle={setTitle}
+            />
+          </Route>
+          <Route exact path='/levels'>
+            <SharkLevels
+              levels={levels}
+              loadingLevels={loadingLevels}
+              setTitle={setTitle}
+            />
+          </Route>
+        </Switch>
       </Container>
     </div>
   );
