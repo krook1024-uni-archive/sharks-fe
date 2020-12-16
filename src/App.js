@@ -6,8 +6,8 @@ import Container from "@material-ui/core/Container";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import { Switch, Route, Link } from "react-router-dom";
-import { Sharks } from "./Sharks";
-import { SharkLevels } from "./SharkLevels";
+import { Sharks } from "./components/Sharks";
+import { SharkLevels } from "./components/SharkLevels";
 
 const useStyles = makeStyles((theme) => ({
   root: {
